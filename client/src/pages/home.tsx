@@ -3,6 +3,7 @@ import FileUpload from "@/components/batch/file-upload";
 import ProcessingQueue from "@/components/batch/processing-queue";
 import ExportOptions from "@/components/batch/export-options";
 import ParameterDisplay from "@/components/batch/parameter-display";
+import BridgeCanvas from "@/components/bridge/bridge-canvas";
 
 export default function Home() {
   const [selectedBatchJob, setSelectedBatchJob] = useState<string | null>(null);
@@ -32,6 +33,11 @@ export default function Home() {
       </header>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Main Bridge Drawing Display */}
+        <div className="mb-8">
+          <BridgeCanvas />
+        </div>
+        
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Left Column: File Management */}
           <div className="lg:col-span-2 space-y-6">
