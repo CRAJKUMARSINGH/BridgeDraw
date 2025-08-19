@@ -203,21 +203,42 @@ export default function BridgeCanvas({ parameters }: BridgeCanvasProps) {
             strokeWidth="2"
           />
           
-          {/* Piers */}
+          {/* Piers with Footings */}
           {layout.pierPositions.map((pierX, index) => (
             <g key={`pier-${index}`}>
+              {/* Pier shaft */}
               <rect
                 x={toScreenX(pierX - bridgeParams.capw/2)}
                 y={toScreenY(bridgeParams.toprl)}
                 width={bridgeParams.capw * actualScale}
-                height={(bridgeParams.toprl - bridgeParams.datum - 2) * actualScale}
+                height={(bridgeParams.toprl - bridgeParams.datum - bridgeParams.futd - 1) * actualScale}
                 fill="#8B4513"
                 stroke="#654321"
                 strokeWidth="2"
               />
+              {/* Pier footing */}
+              <rect
+                x={toScreenX(pierX - bridgeParams.futw/2)}
+                y={toScreenY(bridgeParams.datum + bridgeParams.futd)}
+                width={bridgeParams.futw * actualScale}
+                height={bridgeParams.futd * actualScale}
+                fill="#696969"
+                stroke="#2F4F4F"
+                strokeWidth="2"
+              />
+              {/* Pier cap */}
+              <rect
+                x={toScreenX(pierX - bridgeParams.capw/2)}
+                y={toScreenY(bridgeParams.toprl + 0.3)}
+                width={bridgeParams.capw * actualScale}
+                height={0.3 * actualScale}
+                fill="#A0522D"
+                stroke="#654321"
+                strokeWidth="1"
+              />
               <text 
                 x={toScreenX(pierX)} 
-                y={toScreenY(bridgeParams.datum + 5)} 
+                y={toScreenY(bridgeParams.datum + bridgeParams.futd + 2)} 
                 textAnchor="middle" 
                 fontSize="12" 
                 fill="#000"
@@ -227,25 +248,68 @@ export default function BridgeCanvas({ parameters }: BridgeCanvasProps) {
             </g>
           ))}
           
-          {/* Abutments */}
-          <rect
-            x={toScreenX(bridgeParams.left - 2)}
-            y={toScreenY(bridgeParams.toprl)}
-            width={2 * actualScale}
-            height={(bridgeParams.toprl - bridgeParams.datum - 1) * actualScale}
-            fill="#696969"
-            stroke="#2F4F4F"
-            strokeWidth="2"
-          />
-          <rect
-            x={toScreenX(bridgeParams.right)}
-            y={toScreenY(bridgeParams.toprl)}
-            width={2 * actualScale}
-            height={(bridgeParams.toprl - bridgeParams.datum - 1) * actualScale}
-            fill="#696969"
-            stroke="#2F4F4F"
-            strokeWidth="2"
-          />
+          {/* Abutments with footings */}
+          <g>
+            {/* Left Abutment */}
+            <rect
+              x={toScreenX(bridgeParams.left - bridgeParams.ablen/8)}
+              y={toScreenY(bridgeParams.toprl)}
+              width={bridgeParams.ablen/8 * actualScale}
+              height={(bridgeParams.toprl - bridgeParams.datum - 1) * actualScale}
+              fill="#696969"
+              stroke="#2F4F4F"
+              strokeWidth="2"
+            />
+            {/* Left Abutment Footing */}
+            <rect
+              x={toScreenX(bridgeParams.left - bridgeParams.ablen/6)}
+              y={toScreenY(bridgeParams.datum + 1)}
+              width={bridgeParams.ablen/6 * actualScale}
+              height={1 * actualScale}
+              fill="#555555"
+              stroke="#2F4F4F"
+              strokeWidth="2"
+            />
+            <text 
+              x={toScreenX(bridgeParams.left - bridgeParams.ablen/12)} 
+              y={toScreenY(bridgeParams.datum + 3)} 
+              textAnchor="middle" 
+              fontSize="10" 
+              fill="#000"
+            >
+              A1
+            </text>
+            
+            {/* Right Abutment */}
+            <rect
+              x={toScreenX(bridgeParams.right)}
+              y={toScreenY(bridgeParams.toprl)}
+              width={bridgeParams.ablen/8 * actualScale}
+              height={(bridgeParams.toprl - bridgeParams.datum - 1) * actualScale}
+              fill="#696969"
+              stroke="#2F4F4F"
+              strokeWidth="2"
+            />
+            {/* Right Abutment Footing */}
+            <rect
+              x={toScreenX(bridgeParams.right)}
+              y={toScreenY(bridgeParams.datum + 1)}
+              width={bridgeParams.ablen/6 * actualScale}
+              height={1 * actualScale}
+              fill="#555555"
+              stroke="#2F4F4F"
+              strokeWidth="2"
+            />
+            <text 
+              x={toScreenX(bridgeParams.right + bridgeParams.ablen/12)} 
+              y={toScreenY(bridgeParams.datum + 3)} 
+              textAnchor="middle" 
+              fontSize="10" 
+              fill="#000"
+            >
+              A2
+            </text>
+          </g>
           
           {/* Dimensions */}
           <g stroke="#FF0000" fill="#FF0000" strokeWidth="1">
@@ -363,18 +427,67 @@ export default function BridgeCanvas({ parameters }: BridgeCanvasProps) {
             ℄ OF BRIDGE
           </text>
           
+          {/* Abutments in plan */}
+          <rect
+            x={toScreenX(bridgeParams.left - bridgeParams.ablen/8)}
+            y={toScreenY(-bridgeWidth/2)}
+            width={bridgeParams.ablen/8 * xScale}
+            height={bridgeWidth * yScale/bridgeWidth}
+            fill="#696969"
+            stroke="#2F4F4F"
+            strokeWidth="2"
+          />
+          <text 
+            x={toScreenX(bridgeParams.left - bridgeParams.ablen/12)} 
+            y={toScreenY(bridgeWidth/2 + 1)} 
+            textAnchor="middle" 
+            fontSize="10" 
+            fill="#000"
+          >
+            A1
+          </text>
+          
+          <rect
+            x={toScreenX(bridgeParams.right)}
+            y={toScreenY(-bridgeWidth/2)}
+            width={bridgeParams.ablen/8 * xScale}
+            height={bridgeWidth * yScale/bridgeWidth}
+            fill="#696969"
+            stroke="#2F4F4F"
+            strokeWidth="2"
+          />
+          <text 
+            x={toScreenX(bridgeParams.right + bridgeParams.ablen/12)} 
+            y={toScreenY(bridgeWidth/2 + 1)} 
+            textAnchor="middle" 
+            fontSize="10" 
+            fill="#000"
+          >
+            A2
+          </text>
+          
           {/* Piers in plan */}
           {layout.pierPositions.map((pierX, index) => (
-            <rect
-              key={`pier-plan-${index}`}
-              x={toScreenX(pierX - bridgeParams.capw/2)}
-              y={toScreenY(-2)}
-              width={bridgeParams.capw * xScale}
-              height={4 * yScale/bridgeWidth}
-              fill="#8B4513"
-              stroke="#654321"
-              strokeWidth="2"
-            />
+            <g key={`pier-plan-${index}`}>
+              <rect
+                x={toScreenX(pierX - bridgeParams.capw/2)}
+                y={toScreenY(-bridgeWidth/2)}
+                width={bridgeParams.capw * xScale}
+                height={bridgeWidth * yScale/bridgeWidth}
+                fill="#8B4513"
+                stroke="#654321"
+                strokeWidth="2"
+              />
+              <text 
+                x={toScreenX(pierX)} 
+                y={toScreenY(bridgeWidth/2 + 1)} 
+                textAnchor="middle" 
+                fontSize="10" 
+                fill="#000"
+              >
+                P{index + 1}
+              </text>
+            </g>
           ))}
           
           {/* Roadway markings */}
@@ -393,41 +506,136 @@ export default function BridgeCanvas({ parameters }: BridgeCanvasProps) {
     );
   };
 
-  const renderCrossSection = () => (
-    <div className="bg-white border rounded-lg p-4">
-      <div className="text-center mb-4">
-        <h3 className="text-lg font-bold">TYPICAL CROSS SECTION</h3>
-        <p className="text-sm text-gray-600">Scale 1:{bridgeParams.scale2}</p>
-      </div>
-      
-      <svg width="600" height="300" className="border">
-        <rect width="600" height="300" fill="url(#grid)" />
+  const renderCrossSection = () => {
+    const sectionWidth = 600;
+    const sectionHeight = 400;
+    const bridgeWidth = 12.0;
+    const slabThickness = bridgeParams.slthc || 0.9;
+    const kerbHeight = bridgeParams.kerbd || 0.23;
+    const pierWidth = bridgeParams.capw || 1.2;
+    const foundationWidth = bridgeParams.futw || 4.5;
+    const foundationDepth = bridgeParams.futd || 1.0;
+    
+    return (
+      <div className="bg-white border rounded-lg p-4">
+        <div className="text-center mb-4">
+          <h3 className="text-lg font-bold">TYPICAL CROSS SECTION AT PIER</h3>
+          <p className="text-sm text-gray-600">Scale 1:{bridgeParams.scale2}</p>
+        </div>
         
-        {/* Slab */}
-        <rect x="150" y="120" width="300" height="20" fill="#E8F4FD" stroke="#4A90E2" strokeWidth="2"/>
-        
-        {/* Kerbs */}
-        <rect x="150" y="100" width="15" height="20" fill="#CCCCCC" stroke="#999" strokeWidth="1"/>
-        <rect x="435" y="100" width="15" height="20" fill="#CCCCCC" stroke="#999" strokeWidth="1"/>
-        
-        {/* Carriageway */}
-        <rect x="165" y="115" width="270" height="5" fill="#333" stroke="#000" strokeWidth="1"/>
-        
-        {/* Dimensions */}
-        <g stroke="#FF0000" fill="#FF0000" strokeWidth="1">
-          <line x1="150" y1="80" x2="450" y2="80"/>
-          <text x="300" y="70" textAnchor="middle" fontSize="12">12.00m Total Width</text>
+        <svg width={sectionWidth} height={sectionHeight} className="border">
+          <rect width={sectionWidth} height={sectionHeight} fill="url(#grid)" />
           
-          <line x1="165" y1="160" x2="435" y2="160"/>
-          <text x="300" y="175" textAnchor="middle" fontSize="10">10.50m Carriageway</text>
-        </g>
-        
-        <text x="300" y="250" textAnchor="middle" fontSize="12" fill="#666">
-          Slab Thickness: {bridgeParams.slthc}m | Kerb Height: {bridgeParams.kerbd}m
-        </text>
-      </svg>
-    </div>
-  );
+          {/* Ground line */}
+          <line x1="50" y1="300" x2="550" y2="300" stroke="#8B4513" strokeWidth="3"/>
+          
+          {/* Foundation */}
+          <rect 
+            x={300 - foundationWidth * 10} 
+            y={300 - foundationDepth * 20} 
+            width={foundationWidth * 20} 
+            height={foundationDepth * 20} 
+            fill="#696969" 
+            stroke="#2F4F4F" 
+            strokeWidth="2"
+          />
+          
+          {/* Pier shaft */}
+          <rect 
+            x={300 - pierWidth * 10} 
+            y={120 + slabThickness * 20} 
+            width={pierWidth * 20} 
+            height={300 - foundationDepth * 20 - (120 + slabThickness * 20)} 
+            fill="#8B4513" 
+            stroke="#654321" 
+            strokeWidth="2"
+          />
+          
+          {/* Pier cap */}
+          <rect 
+            x={300 - (pierWidth + 0.2) * 10} 
+            y="115" 
+            width={(pierWidth + 0.4) * 20} 
+            height="10" 
+            fill="#A0522D" 
+            stroke="#654321" 
+            strokeWidth="2"
+          />
+          
+          {/* Bridge slab */}
+          <rect 
+            x={300 - bridgeWidth * 10} 
+            y="120" 
+            width={bridgeWidth * 20} 
+            height={slabThickness * 20} 
+            fill="#E8F4FD" 
+            stroke="#4A90E2" 
+            strokeWidth="2"
+          />
+          
+          {/* Left kerb */}
+          <rect 
+            x={300 - bridgeWidth * 10} 
+            y={120 - kerbHeight * 20} 
+            width="15" 
+            height={(slabThickness + kerbHeight) * 20} 
+            fill="#CCCCCC" 
+            stroke="#999" 
+            strokeWidth="1"
+          />
+          
+          {/* Right kerb */}
+          <rect 
+            x={300 + bridgeWidth * 10 - 15} 
+            y={120 - kerbHeight * 20} 
+            width="15" 
+            height={(slabThickness + kerbHeight) * 20} 
+            fill="#CCCCCC" 
+            stroke="#999" 
+            strokeWidth="1"
+          />
+          
+          {/* Carriageway surface */}
+          <rect 
+            x={300 - (bridgeWidth - 1) * 10} 
+            y="118" 
+            width={(bridgeWidth - 2) * 20} 
+            height="4" 
+            fill="#333" 
+            stroke="#000" 
+            strokeWidth="1"
+          />
+          
+          {/* Dimensions */}
+          <g stroke="#FF0000" fill="#FF0000" strokeWidth="1">
+            {/* Total width dimension */}
+            <line x1={300 - bridgeWidth * 10} y1="80" x2={300 + bridgeWidth * 10} y2="80"/>
+            <line x1={300 - bridgeWidth * 10} y1="75" x2={300 - bridgeWidth * 10} y2="85"/>
+            <line x1={300 + bridgeWidth * 10} y1="75" x2={300 + bridgeWidth * 10} y2="85"/>
+            <text x="300" y="70" textAnchor="middle" fontSize="12">{bridgeWidth.toFixed(2)}m Total Width</text>
+            
+            {/* Carriageway width */}
+            <line x1={300 - (bridgeWidth - 1) * 10} y1="350" x2={300 + (bridgeWidth - 1) * 10} y2="350"/>
+            <text x="300" y="365" textAnchor="middle" fontSize="10">{(bridgeWidth - 2).toFixed(2)}m Carriageway</text>
+            
+            {/* Pier width */}
+            <line x1={300 - pierWidth * 10} y1="370" x2={300 + pierWidth * 10} y2="370"/>
+            <text x="300" y="385" textAnchor="middle" fontSize="10">{pierWidth.toFixed(2)}m Pier</text>
+          </g>
+          
+          {/* Labels */}
+          <text x="80" y="320" fontSize="12" fill="#8B4513">Ground Level</text>
+          <text x="320" y="200" fontSize="10" fill="#8B4513">Pier</text>
+          <text x="320" y="285" fontSize="10" fill="#696969">Foundation</text>
+          <text x="220" y="110" fontSize="10" fill="#4A90E2">Bridge Slab</text>
+          
+          <text x="300" y="395" textAnchor="middle" fontSize="12" fill="#666">
+            Slab: {slabThickness}m | Kerb: {kerbHeight}m | Foundation: {foundationWidth}×{foundationDepth}m
+          </text>
+        </svg>
+      </div>
+    );
+  };
 
   return (
     <Card className="w-full">
