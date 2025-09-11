@@ -12,7 +12,7 @@ import {
 } from "@shared/schema";
 import { z } from "zod";
 
-export async function registerRoutes(app: Express): Promise<Server> {
+export function attachRoutes(app: Express): void {
   // Existing bridge project routes
   app.get("/api/bridge/projects", async (req, res) => {
     try {
@@ -200,7 +200,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const completedFiles = files.filter(f => f.status === "completed");
 
       // Lazy import to avoid adding to cold start if unused
-      const archiver = (await import("archiver")).default;
+      const archiverModule: any = await import("archiver");
+      const archiver = archiverModule.default ?? archiverModule;
 
       res.setHeader("Content-Type", "application/zip");
       res.setHeader("Content-Disposition", `attachment; filename=bridge_exports_${job.id}.zip`);
@@ -236,6 +237,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+}
+
+export async function registerRoutes(app: Express): Promise<Server> {
+  attachRoutes(app);
   const httpServer = createServer(app);
   return httpServer;
 }
