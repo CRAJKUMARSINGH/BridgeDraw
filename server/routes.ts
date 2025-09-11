@@ -1,5 +1,4 @@
 import type { Express } from "express";
-import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { 
   batchUploadSchema, 
@@ -12,7 +11,7 @@ import {
 } from "@shared/schema";
 import { z } from "zod";
 
-export async function registerRoutes(app: Express): Promise<Server> {
+export async function registerRoutes(app: Express): Promise<void> {
   // Existing bridge project routes
   app.get("/api/bridge/projects", async (req, res) => {
     try {
@@ -190,8 +189,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  const httpServer = createServer(app);
-  return httpServer;
+  return;
 }
 
 // Helper function to parse bridge input file
