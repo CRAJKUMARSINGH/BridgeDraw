@@ -99,6 +99,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       // Start processing queue (in real app, this would be async)
+      // Immediately set job status to processing to avoid race with manual trigger
+      await storage.updateBatchJob(batchJob.id, { status: "processing" });
       processBatchJobAsync(batchJob.id);
 
       res.json({
