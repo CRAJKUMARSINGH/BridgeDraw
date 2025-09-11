@@ -164,7 +164,7 @@ export default function BridgeCanvas({ parameters }: BridgeCanvasProps) {
     const toScreenY = (y: number) => viewHeight - margin - (y - bridgeParams.datum) * actualScale;
 
     return (
-      <div className="bg-white border rounded-lg p-4">
+      <div className="bridge-canvas bg-white border rounded-lg p-4">
         <div className="text-center mb-4">
           <h3 className="text-lg font-bold">BRIDGE ELEVATION - GENERAL ARRANGEMENT</h3>
           <p className="text-sm text-gray-600">Scale 1:{bridgeParams.scale1} | Length: {layout.bridgeLength.toFixed(1)}m</p>
@@ -387,7 +387,7 @@ export default function BridgeCanvas({ parameters }: BridgeCanvasProps) {
     const toScreenY = (y: number) => viewHeight/2 + y * yScale/bridgeWidth;
 
     return (
-      <div className="bg-white border rounded-lg p-4">
+      <div className="bridge-canvas bg-white border rounded-lg p-4">
         <div className="text-center mb-4">
           <h3 className="text-lg font-bold">BRIDGE PLAN - GENERAL ARRANGEMENT</h3>
           <p className="text-sm text-gray-600">Scale 1:{bridgeParams.scale1} | Width: {bridgeWidth}m</p>
@@ -517,7 +517,7 @@ export default function BridgeCanvas({ parameters }: BridgeCanvasProps) {
     const foundationDepth = bridgeParams.futd || 1.0;
     
     return (
-      <div className="bg-white border rounded-lg p-4">
+      <div className="bridge-canvas bg-white border rounded-lg p-4">
         <div className="text-center mb-4">
           <h3 className="text-lg font-bold">TYPICAL CROSS SECTION AT PIER</h3>
           <p className="text-sm text-gray-600">Scale 1:{bridgeParams.scale2}</p>

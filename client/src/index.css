@@ -98,6 +98,22 @@
   --shadow-2xl: 0px 2px 0px 0px hsl(202.8169 89.1213% 53.1373% / 0.00);
 }
 
+/* Bridge canvas container and SVG styling */
+.bridge-canvas {
+  overflow: hidden;
+}
+
+.bridge-canvas svg {
+  background: white;
+  display: block;
+}
+
+@media (max-width: 768px) {
+  .bridge-canvas {
+    overflow-x: auto;
+  }
+}
+
 @layer base {
   * {
     @apply border-border;
