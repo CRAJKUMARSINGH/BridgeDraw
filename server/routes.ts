@@ -11,7 +11,7 @@ import {
 } from "../shared/schema";
 import { z } from "zod";
 
-export async function registerRoutes(app: Express): Promise<void> {
+export function registerRoutes(app: Express): void {
   // Existing bridge project routes
   app.get("/api/bridge/projects", async (req, res) => {
     try {

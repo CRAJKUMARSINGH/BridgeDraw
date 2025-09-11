@@ -36,7 +36,7 @@ app.use((req, res, next) => {
 });
 
 // Register API routes
-await registerRoutes(app);
+registerRoutes(app);
 
 // Error handler suitable for serverless
 app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
