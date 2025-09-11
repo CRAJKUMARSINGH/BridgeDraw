@@ -1,0 +1,673 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bridge GAD Drafter - Batch Processing System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#2563eb',
+                        secondary: '#64748b',
+                        success: '#16a34a',
+                        warning: '#ea580c',
+                        error: '#dc2626'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace']
+                    }
+                }
+            }
+        };
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-gray-50 font-sans">
+    <!-- @COMPONENT: Header Navigation -->
+    <header class="bg-white border-b border-gray-200 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center space-x-3">
+                    <div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+                        <i class="fas fa-bridge text-white text-sm"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-bold text-gray-900">Bridge GAD Drafter</h1>
+                        <p class="text-xs text-gray-500">Batch Processing System</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div class="flex items-center space-x-2 text-sm text-gray-600">
+                        <i class="fas fa-graduation-cap text-primary"></i>
+                        <span>Educational Mode</span>
+                    </div>
+                    <button class="p-2 text-gray-400 hover:text-gray-600">
+                        <i class="fas fa-cog"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+    <!-- @END_COMPONENT: Header Navigation -->
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Left Column: File Management -->
+            <div class="lg:col-span-2 space-y-6">
+                <!-- @COMPONENT: Enhanced File Upload with Batch Support -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200">
+                    <div class="p-6">
+                        <div class="flex items-center justify-between mb-6">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-cloud-upload-alt text-primary"></i>
+                                </div>
+                                <div>
+                                    <h2 class="text-lg font-semibold text-gray-900">Upload GAD Files</h2>
+                                    <p class="text-sm text-gray-500">Batch processing for multiple bridge designs</p>
+                                </div>
+                            </div>
+                            <span class="bg-gray-100 text-gray-600 px-3 py-1 rounded-full text-sm font-medium">
+                                Step 1
+                            </span>
+                        </div>
+
+                        <!-- Enhanced Drop Zone for Multiple Files -->
+                        <div class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-primary transition-colors cursor-pointer" id="dropzone" data-implementation="Enhanced for multiple file selection">
+                            <div class="space-y-4">
+                                <div class="mx-auto w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-files text-gray-400 text-xl"></i>
+                                </div>
+                                <div>
+                                    <p class="text-lg font-medium text-gray-900">Upload Multiple GAD.txt Files</p>
+                                    <p class="text-sm text-gray-500 mt-1">
+                                        Click to browse or drag and drop multiple bridge parameter files
+                                    </p>
+                                </div>
+                                <div class="flex items-center justify-center space-x-6 text-xs text-gray-400">
+                                    <span>Supported: .txt files</span>
+                                    <span>Max: 10MB each</span>
+                                    <span>Batch limit: 20 files</span>
+                                </div>
+                            </div>
+                            <input type="file" multiple accept=".txt" class="hidden" id="file-input" />
+                        </div>
+
+                        <!-- File Queue Display -->
+                        <div class="mt-6 space-y-3" id="file-queue">
+                            <!-- @MAP: uploadedFiles.map(file => ( -->
+                            <div class="bg-gray-50 rounded-lg p-4" data-mock="true">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                                            <i class="fas fa-file-alt text-blue-600 text-sm"></i>
+                                        </div>
+                                        <div>
+                                            <p class="font-medium text-gray-900" data-bind="file.name">bridge_001.txt</p>
+                                            <p class="text-sm text-gray-500" data-bind="file.size">2.3 KB • Ready for processing</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center space-x-2">
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                            <i class="fas fa-check-circle mr-1"></i>
+                                            Validated
+                                        </span>
+                                        <button class="p-1 text-gray-400 hover:text-gray-600" data-event="click:removeFile">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="bg-gray-50 rounded-lg p-4" data-mock="true">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                                            <i class="fas fa-file-alt text-blue-600 text-sm"></i>
+                                        </div>
+                                        <div>
+                                            <p class="font-medium text-gray-900" data-bind="file.name">bridge_002.txt</p>
+                                            <p class="text-sm text-gray-500" data-bind="file.size">1.8 KB • Ready for processing</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center space-x-2">
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                            <i class="fas fa-check-circle mr-1"></i>
+                                            Validated
+                                        </span>
+                                        <button class="p-1 text-gray-400 hover:text-gray-600" data-event="click:removeFile">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="bg-gray-50 rounded-lg p-4" data-mock="true">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center">
+                                            <i class="fas fa-file-alt text-orange-600 text-sm"></i>
+                                        </div>
+                                        <div>
+                                            <p class="font-medium text-gray-900" data-bind="file.name">bridge_003.txt</p>
+                                            <p class="text-sm text-gray-500" data-bind="file.size">2.1 KB • Validation error</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center space-x-2">
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                            <i class="fas fa-exclamation-triangle mr-1"></i>
+                                            Invalid Format
+                                        </span>
+                                        <button class="p-1 text-gray-400 hover:text-gray-600" data-event="click:removeFile">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- @END_MAP -->
+                        </div>
+
+                        <!-- Batch Action Buttons -->
+                        <div class="mt-6 flex items-center justify-between">
+                            <div class="text-sm text-gray-600">
+                                <span class="font-medium" data-bind="validFiles.length">2</span> of <span data-bind="totalFiles.length">3</span> files ready
+                            </div>
+                            <div class="flex items-center space-x-3">
+                                <button class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50" data-event="click:clearAll">
+                                    Clear All
+                                </button>
+                                <button class="px-6 py-2 bg-primary text-white text-sm font-medium rounded-md hover:bg-primary/90 disabled:opacity-50" data-event="click:startBatchProcessing">
+                                    <i class="fas fa-play mr-2"></i>
+                                    Start Batch Processing
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- @END_COMPONENT: Enhanced File Upload -->
+
+                <!-- @COMPONENT: Batch Processing Queue Manager -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200">
+                    <div class="p-6">
+                        <div class="flex items-center justify-between mb-6">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-tasks text-orange-600"></i>
+                                </div>
+                                <div>
+                                    <h2 class="text-lg font-semibold text-gray-900">Batch Processing Queue</h2>
+                                    <p class="text-sm text-gray-500">Monitor and manage multiple bridge generations</p>
+                                </div>
+                            </div>
+                            <span class="bg-gray-100 text-gray-600 px-3 py-1 rounded-full text-sm font-medium">
+                                Step 2
+                            </span>
+                        </div>
+
+                        <!-- Queue Status Overview -->
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                            <div class="bg-blue-50 rounded-lg p-4 text-center">
+                                <div class="text-2xl font-bold text-blue-600" data-bind="queueStats.pending">2</div>
+                                <div class="text-sm text-blue-600">Pending</div>
+                            </div>
+                            <div class="bg-orange-50 rounded-lg p-4 text-center">
+                                <div class="text-2xl font-bold text-orange-600" data-bind="queueStats.processing">1</div>
+                                <div class="text-sm text-orange-600">Processing</div>
+                            </div>
+                            <div class="bg-green-50 rounded-lg p-4 text-center">
+                                <div class="text-2xl font-bold text-green-600" data-bind="queueStats.completed">5</div>
+                                <div class="text-sm text-green-600">Completed</div>
+                            </div>
+                            <div class="bg-red-50 rounded-lg p-4 text-center">
+                                <div class="text-2xl font-bold text-red-600" data-bind="queueStats.failed">0</div>
+                                <div class="text-sm text-red-600">Failed</div>
+                            </div>
+                        </div>
+
+                        <!-- Individual Job Progress -->
+                        <div class="space-y-3">
+                            <!-- @MAP: processingJobs.map(job => ( -->
+                            <div class="border border-gray-200 rounded-lg p-4" data-mock="true">
+                                <div class="flex items-center justify-between mb-3">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center">
+                                            <i class="fas fa-cog fa-spin text-orange-600 text-sm"></i>
+                                        </div>
+                                        <div>
+                                            <p class="font-medium text-gray-900" data-bind="job.fileName">bridge_001.txt</p>
+                                            <p class="text-sm text-gray-500" data-bind="job.currentStep">Generating elevation views</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center space-x-2">
+                                        <span class="text-sm text-gray-600" data-bind="job.progress">65%</span>
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
+                                            Processing
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                    <div class="bg-orange-500 h-2 rounded-full transition-all duration-300" style="width: 65%" data-bind="job.progress"></div>
+                                </div>
+                                <div class="mt-2 text-xs text-gray-500" data-bind="job.estimatedTime">
+                                    Estimated completion: 2 minutes
+                                </div>
+                            </div>
+
+                            <div class="border border-gray-200 rounded-lg p-4" data-mock="true">
+                                <div class="flex items-center justify-between mb-3">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
+                                            <i class="fas fa-check text-green-600 text-sm"></i>
+                                        </div>
+                                        <div>
+                                            <p class="font-medium text-gray-900" data-bind="job.fileName">bridge_002.txt</p>
+                                            <p class="text-sm text-gray-500" data-bind="job.currentStep">Generation completed</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center space-x-2">
+                                        <span class="text-sm text-gray-600" data-bind="job.progress">100%</span>
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                            Completed
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                    <div class="bg-green-500 h-2 rounded-full transition-all duration-300" style="width: 100%" data-bind="job.progress"></div>
+                                </div>
+                                <div class="mt-2 flex items-center justify-between">
+                                    <div class="text-xs text-gray-500" data-bind="job.completionTime">
+                                        Completed in 3m 24s
+                                    </div>
+                                    <div class="flex items-center space-x-2">
+                                        <button class="text-xs text-primary hover:text-primary/80" data-event="click:viewDetails">
+                                            <i class="fas fa-eye mr-1"></i>View
+                                        </button>
+                                        <button class="text-xs text-primary hover:text-primary/80" data-event="click:downloadFiles">
+                                            <i class="fas fa-download mr-1"></i>Download
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- @END_MAP -->
+                        </div>
+
+                        <!-- Queue Controls -->
+                        <div class="mt-6 flex items-center justify-between">
+                            <div class="text-sm text-gray-600">
+                                Queue processing: <span class="font-medium text-green-600">Active</span>
+                            </div>
+                            <div class="flex items-center space-x-3">
+                                <button class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50" data-event="click:pauseQueue">
+                                    <i class="fas fa-pause mr-2"></i>
+                                    Pause Queue
+                                </button>
+                                <button class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50" data-event="click:clearCompleted">
+                                    <i class="fas fa-trash mr-2"></i>
+                                    Clear Completed
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- @END_COMPONENT: Batch Processing Queue Manager -->
+
+                <!-- @COMPONENT: Enhanced Batch Export Options -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200">
+                    <div class="p-6">
+                        <div class="flex items-center justify-between mb-6">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-download text-green-600"></i>
+                                </div>
+                                <div>
+                                    <h2 class="text-lg font-semibold text-gray-900">Batch Export Options</h2>
+                                    <p class="text-sm text-gray-500">Download all generated files in bulk</p>
+                                </div>
+                            </div>
+                            <span class="bg-gray-100 text-gray-600 px-3 py-1 rounded-full text-sm font-medium">
+                                Step 3
+                            </span>
+                        </div>
+
+                        <!-- Export Format Selection -->
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                            <div class="border border-gray-200 rounded-lg p-4 hover:border-primary transition-colors cursor-pointer" data-event="click:selectFormat" data-format="dwg">
+                                <div class="text-center">
+                                    <div class="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center mx-auto mb-3">
+                                        <i class="fas fa-file-code text-orange-600 text-lg"></i>
+                                    </div>
+                                    <h4 class="font-semibold text-gray-900">DWG Format</h4>
+                                    <p class="text-sm text-gray-600 mt-1">AutoCAD Drawing Files</p>
+                                    <p class="text-xs text-gray-500 mt-2">3 A4 Landscape Pages each</p>
+                                    <div class="mt-3 text-sm">
+                                        <span class="font-medium text-green-600" data-bind="dwgStats.completed">5</span> files ready
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="border border-gray-200 rounded-lg p-4 hover:border-primary transition-colors cursor-pointer" data-event="click:selectFormat" data-format="pdf">
+                                <div class="text-center">
+                                    <div class="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center mx-auto mb-3">
+                                        <i class="fas fa-file-pdf text-red-600 text-lg"></i>
+                                    </div>
+                                    <h4 class="font-semibold text-gray-900">PDF Format</h4>
+                                    <p class="text-sm text-gray-600 mt-1">Portable Documents</p>
+                                    <p class="text-xs text-gray-500 mt-2">Print Ready A4</p>
+                                    <div class="mt-3 text-sm">
+                                        <span class="font-medium text-green-600" data-bind="pdfStats.completed">5</span> files ready
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="border border-gray-200 rounded-lg p-4 hover:border-primary transition-colors cursor-pointer" data-event="click:selectFormat" data-format="lisp">
+                                <div class="text-center">
+                                    <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mx-auto mb-3">
+                                        <i class="fas fa-code text-green-600 text-lg"></i>
+                                    </div>
+                                    <h4 class="font-semibold text-gray-900">LISP Code</h4>
+                                    <p class="text-sm text-gray-600 mt-1">AutoCAD LISP Scripts</p>
+                                    <p class="text-xs text-gray-500 mt-2">Generated Commands</p>
+                                    <div class="mt-3 text-sm">
+                                        <span class="font-medium text-green-600" data-bind="lispStats.completed">5</span> files ready
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Export Configuration -->
+                        <div class="bg-gray-50 rounded-lg p-4 mb-6">
+                            <h4 class="font-medium text-gray-900 mb-3">Export Configuration</h4>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Archive Format</label>
+                                    <select class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm" data-bind="exportConfig.archiveFormat">
+                                        <option value="zip">ZIP Archive</option>
+                                        <option value="tar">TAR Archive</option>
+                                        <option value="individual">Individual Files</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Naming Convention</label>
+                                    <select class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm" data-bind="exportConfig.namingConvention">
+                                        <option value="original">Original Filename</option>
+                                        <option value="sequential">Sequential (bridge_001, 002...)</option>
+                                        <option value="timestamp">With Timestamp</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="mt-4">
+                                <label class="flex items-center space-x-2">
+                                    <input type="checkbox" class="rounded border-gray-300" data-bind="exportConfig.includeParameters" />
+                                    <span class="text-sm text-gray-700">Include parameter files (.txt)</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Export Actions -->
+                        <div class="flex items-center justify-between">
+                            <div class="text-sm text-gray-600">
+                                Total files: <span class="font-medium" data-bind="totalReadyFiles">15</span> 
+                                (5 projects × 3 formats)
+                            </div>
+                            <div class="flex items-center space-x-3">
+                                <button class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50" data-event="click:previewExport">
+                                    <i class="fas fa-eye mr-2"></i>
+                                    Preview
+                                </button>
+                                <button class="px-6 py-2 bg-green-600 text-white text-sm font-medium rounded-md hover:bg-green-700" data-event="click:startBatchExport">
+                                    <i class="fas fa-download mr-2"></i>
+                                    Download All
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- @END_COMPONENT: Enhanced Batch Export Options -->
+            </div>
+
+            <!-- Right Column: Parameter Display & Controls -->
+            <div class="space-y-6">
+                <!-- @COMPONENT: Current Project Parameter Display (Preserved) -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200">
+                    <div class="p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-semibold text-gray-900 flex items-center">
+                                <i class="fas fa-calculator text-primary mr-2"></i>
+                                Current Project Parameters
+                            </h3>
+                            <button class="text-sm text-primary hover:text-primary/80" data-event="click:editParameters">
+                                <i class="fas fa-edit mr-1"></i>Edit
+                            </button>
+                        </div>
+                        
+                        <div class="space-y-3 text-sm">
+                            <div class="flex justify-between py-2 border-b border-gray-100">
+                                <span class="font-medium">Scale 1 (Plan/Elevation):</span>
+                                <span class="font-mono text-gray-700" data-bind="parameters.scale1">1:100</span>
+                            </div>
+                            <div class="flex justify-between py-2 border-b border-gray-100">
+                                <span class="font-medium">Scale 2 (Sections):</span>
+                                <span class="font-mono text-gray-700" data-bind="parameters.scale2">1:50</span>
+                            </div>
+                            <div class="flex justify-between py-2 border-b border-gray-100">
+                                <span class="font-medium">Skew Angle:</span>
+                                <span class="font-mono text-gray-700" data-bind="parameters.skew">15.0°</span>
+                            </div>
+                            <div class="flex justify-between py-2 border-b border-gray-100">
+                                <span class="font-medium">Datum Level:</span>
+                                <span class="font-mono text-gray-700" data-bind="parameters.datum">120.500m</span>
+                            </div>
+                            <div class="flex justify-between py-2 border-b border-gray-100">
+                                <span class="font-medium">Top RL:</span>
+                                <span class="font-mono text-gray-700" data-bind="parameters.toprl">125.750m</span>
+                            </div>
+                            <div class="flex justify-between py-2 border-b border-gray-100">
+                                <span class="font-medium">Chainage Range:</span>
+                                <span class="font-mono text-gray-700" data-bind="parameters.chainageRange">2+150 to 2+200</span>
+                            </div>
+                            <div class="flex justify-between py-2 border-b border-gray-100">
+                                <span class="font-medium">X Increment:</span>
+                                <span class="font-mono text-gray-700" data-bind="parameters.xincr">5.0m</span>
+                            </div>
+                            <div class="flex justify-between py-2 border-b border-gray-100">
+                                <span class="font-medium">Y Increment:</span>
+                                <span class="font-mono text-gray-700" data-bind="parameters.yincr">1.0m</span>
+                            </div>
+                            <div class="flex justify-between py-2">
+                                <span class="font-medium">No. of Chainages:</span>
+                                <span class="font-mono text-gray-700" data-bind="parameters.noch">11</span>
+                            </div>
+                        </div>
+
+                        <!-- Calculated Constants (Educational) -->
+                        <div class="mt-6 p-4 bg-blue-50 rounded-lg">
+                            <h4 class="text-sm font-medium text-blue-900 mb-3">Calculated Constants (Educational)</h4>
+                            <div class="space-y-2 text-xs">
+                                <div class="flex justify-between">
+                                    <span class="text-blue-700">vvs (V scale factor):</span>
+                                    <span class="font-mono text-blue-900" data-bind="constants.vvs">1000.0</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-blue-700">hhs (H scale factor):</span>
+                                    <span class="font-mono text-blue-900" data-bind="constants.hhs">1000.0</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-blue-700">skew1 (radians):</span>
+                                    <span class="font-mono text-blue-900" data-bind="constants.skew1">0.2618</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-blue-700">sc (scale ratio):</span>
+                                    <span class="font-mono text-blue-900" data-bind="constants.sc">2.00</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- @END_COMPONENT: Current Project Parameter Display -->
+
+                <!-- @COMPONENT: Processing Statistics -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200">
+                    <div class="p-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                            <i class="fas fa-chart-bar text-primary mr-2"></i>
+                            Batch Statistics
+                        </h3>
+                        
+                        <div class="space-y-4">
+                            <div class="flex items-center justify-between p-3 bg-green-50 rounded-lg">
+                                <div class="flex items-center space-x-3">
+                                    <i class="fas fa-check-circle text-green-600"></i>
+                                    <span class="text-sm font-medium text-green-800">Successfully Generated</span>
+                                </div>
+                                <span class="text-lg font-bold text-green-600" data-bind="stats.successful">5</span>
+                            </div>
+                            
+                            <div class="flex items-center justify-between p-3 bg-orange-50 rounded-lg">
+                                <div class="flex items-center space-x-3">
+                                    <i class="fas fa-clock text-orange-600"></i>
+                                    <span class="text-sm font-medium text-orange-800">Processing Time</span>
+                                </div>
+                                <span class="text-lg font-bold text-orange-600" data-bind="stats.totalTime">18m 42s</span>
+                            </div>
+                            
+                            <div class="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
+                                <div class="flex items-center space-x-3">
+                                    <i class="fas fa-file-alt text-blue-600"></i>
+                                    <span class="text-sm font-medium text-blue-800">Files Generated</span>
+                                </div>
+                                <span class="text-lg font-bold text-blue-600" data-bind="stats.filesGenerated">15</span>
+                            </div>
+                            
+                            <div class="flex items-center justify-between p-3 bg-purple-50 rounded-lg">
+                                <div class="flex items-center space-x-3">
+                                    <i class="fas fa-database text-purple-600"></i>
+                                    <span class="text-sm font-medium text-purple-800">Total File Size</span>
+                                </div>
+                                <span class="text-lg font-bold text-purple-600" data-bind="stats.totalSize">24.8 MB</span>
+                            </div>
+                        </div>
+
+                        <!-- Processing Efficiency Metrics -->
+                        <div class="mt-6 p-4 bg-gray-50 rounded-lg">
+                            <h4 class="text-sm font-medium text-gray-700 mb-3">Efficiency Metrics</h4>
+                            <div class="space-y-2 text-xs text-gray-600">
+                                <div class="flex justify-between">
+                                    <span>Avg. processing time per bridge:</span>
+                                    <span class="font-mono" data-bind="efficiency.avgTime">3m 44s</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span>Success rate:</span>
+                                    <span class="font-mono" data-bind="efficiency.successRate">100%</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span>Queue throughput:</span>
+                                    <span class="font-mono" data-bind="efficiency.throughput">16.1 bridges/hour</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- @END_COMPONENT: Processing Statistics -->
+
+                <!-- @COMPONENT: Educational Learning Resources -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200">
+                    <div class="p-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                            <i class="fas fa-graduation-cap text-primary mr-2"></i>
+                            Learning Resources
+                        </h3>
+                        
+                        <div class="space-y-3">
+                            <a href="#" class="block p-3 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors" data-implementation="Link to bridge design fundamentals">
+                                <div class="flex items-center space-x-3">
+                                    <i class="fas fa-book text-blue-600"></i>
+                                    <div>
+                                        <p class="text-sm font-medium text-blue-900">Bridge Design Fundamentals</p>
+                                        <p class="text-xs text-blue-700">Learn the theory behind GAD parameters</p>
+                                    </div>
+                                </div>
+                            </a>
+                            
+                            <a href="#" class="block p-3 bg-green-50 rounded-lg hover:bg-green-100 transition-colors" data-implementation="Link to LISP programming guide">
+                                <div class="flex items-center space-x-3">
+                                    <i class="fas fa-code text-green-600"></i>
+                                    <div>
+                                        <p class="text-sm font-medium text-green-900">LISP Programming Guide</p>
+                                        <p class="text-xs text-green-700">Understand AutoCAD automation</p>
+                                    </div>
+                                </div>
+                            </a>
+                            
+                            <a href="#" class="block p-3 bg-orange-50 rounded-lg hover:bg-orange-100 transition-colors" data-implementation="Link to coordinate transformation tutorial">
+                                <div class="flex items-center space-x-3">
+                                    <i class="fas fa-calculator text-orange-600"></i>
+                                    <div>
+                                        <p class="text-sm font-medium text-orange-900">Coordinate Transformations</p>
+                                        <p class="text-xs text-orange-700">Mathematical foundations explained</p>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <!-- @END_COMPONENT: Educational Learning Resources -->
+            </div>
+        </div>
+    </div>
+
+    <!-- @COMPONENT: Toast Notifications Container -->
+    <div id="toast-container" class="fixed top-4 right-4 z-50 space-y-2" data-implementation="Toast notification system for batch operations">
+        <!-- Toast notifications will be dynamically inserted here -->
+    </div>
+    <!-- @END_COMPONENT: Toast Notifications Container -->
+
+    <script>
+        // TODO: Implement batch file upload functionality
+        // TODO: Implement batch processing queue management
+        // TODO: Implement batch export operations
+        // TODO: Integrate with existing bridge calculation APIs
+        // TODO: Implement progress tracking for multiple jobs
+        // TODO: Add real-time updates for processing status
+        
+        (function() {
+            // Enhanced drag and drop functionality for multiple files
+            const dropzone = document.getElementById('dropzone');
+            const fileInput = document.getElementById('file-input');
+            
+            // TODO: Implement multi-file drag and drop handlers
+            // TODO: Add file validation for batch processing
+            // TODO: Update queue display dynamically
+            
+            // Mock data for demonstration
+            const mockBatchData = {
+                queueStats: {
+                    pending: 2,
+                    processing: 1,
+                    completed: 5,
+                    failed: 0
+                },
+                stats: {
+                    successful: 5,
+                    totalTime: "18m 42s",
+                    filesGenerated: 15,
+                    totalSize: "24.8 MB"
+                },
+                efficiency: {
+                    avgTime: "3m 44s",
+                    successRate: "100%",
+                    throughput: "16.1 bridges/hour"
+                }
+            };
+            
+            // TODO: Connect to real batch processing API endpoints
+            // TODO: Implement WebSocket for real-time progress updates
+            // TODO: Add error handling and retry mechanisms
+            
+        })();
+    </script>
+</body>
+</html>

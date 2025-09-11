@@ -188,6 +188,41 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.get("/api/bridge/download/:id", async (req, res) => {
+    try {
+      const job = await storage.getBatchJob(req.params.id);
+      if (!job) {
+        return res.status(404).json({ error: "Batch job not found" });
+      }
+
+      const files = await storage.getBatchJobFiles(job.id);
+      const completedFiles = files.filter(f => f.status === "completed");
+
+      if (completedFiles.length === 0) {
+        return res.status(400).json({ error: "No completed files to download" });
+      }
+
+      // Create a mock ZIP file with sample content
+      const zipContent = `BridgeGAD Export - ${job.name}
+Generated: ${new Date().toISOString()}
+Total Files: ${completedFiles.length}
+
+Files included:
+${completedFiles.map(f => `- ${f.fileName.replace('.txt', '')}.dwg`).join('\n')}
+${completedFiles.map(f => `- ${f.fileName.replace('.txt', '')}.pdf`).join('\n')}
+${completedFiles.map(f => `- ${f.fileName.replace('.txt', '')}.lisp`).join('\n')}
+
+Note: This is a demo export. In production, actual DWG and PDF files would be generated.
+`;
+
+      res.setHeader('Content-Type', 'text/plain');
+      res.setHeader('Content-Disposition', `attachment; filename="bridge-export-${job.id}.txt"`);
+      res.send(zipContent);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to generate download" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
