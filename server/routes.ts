@@ -188,6 +188,54 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Download endpoint: streams a ZIP containing placeholder PDF and DWG files
+  app.get("/api/bridge/download/:id", async (req, res) => {
+    try {
+      const job = await storage.getBatchJob(req.params.id);
+      if (!job) {
+        return res.status(404).json({ error: "Batch job not found" });
+      }
+
+      const files = await storage.getBatchJobFiles(job.id);
+      const completedFiles = files.filter(f => f.status === "completed");
+
+      // Lazy import to avoid adding to cold start if unused
+      const archiver = (await import("archiver")).default;
+
+      res.setHeader("Content-Type", "application/zip");
+      res.setHeader("Content-Disposition", `attachment; filename=bridge_exports_${job.id}.zip`);
+
+      const archive = archiver("zip", { zlib: { level: 9 } });
+      archive.on("error", (err: any) => {
+        res.status(500).end(`Archive error: ${err.message}`);
+      });
+      archive.pipe(res);
+
+      // For demo: generate small placeholder contents for each completed file in both formats
+      for (const f of completedFiles) {
+        const baseName = f.fileName.replace(/\.[^.]+$/, "");
+        const pdfContent = Buffer.from(`%PDF-1.4\n% Placeholder PDF for ${baseName}\n`, "utf-8");
+        const dwgContent = Buffer.from(`Placeholder DWG binary for ${baseName}\n`, "utf-8");
+
+        archive.append(pdfContent, { name: `${baseName}.pdf` });
+        archive.append(dwgContent, { name: `${baseName}.dwg` });
+      }
+
+      // Also include a manifest JSON
+      const manifest = {
+        jobId: job.id,
+        jobName: job.name,
+        count: completedFiles.length,
+        generatedAt: new Date().toISOString(),
+      };
+      archive.append(JSON.stringify(manifest, null, 2), { name: "manifest.json" });
+
+      await archive.finalize();
+    } catch (error: any) {
+      res.status(500).json({ error: error?.message || "Failed to create download" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
